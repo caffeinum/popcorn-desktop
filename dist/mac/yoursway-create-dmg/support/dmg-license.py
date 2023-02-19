@@ -83,22 +83,26 @@ def main(options, args):
         "Unable to print. Make sure you have selected a printer."
     }
 };""")
-        os.system('/usr/bin/hdiutil unflatten -quiet "%s"' % dmgFile)
-        os.system('%s "%s/"*.r %s -a -o "%s"' %
-                  (options.rez, options.flat_carbon, tmpFile, dmgFile))
+        os.system(f'/usr/bin/hdiutil unflatten -quiet "{dmgFile}"')
+        os.system(
+            f'{options.rez} "{options.flat_carbon}/"*.r {tmpFile} -a -o "{dmgFile}"'
+        )
 
-        os.system('/usr/bin/hdiutil flatten -quiet "%s"' % dmgFile)
+        os.system(f'/usr/bin/hdiutil flatten -quiet "{dmgFile}"')
         if options.compression is not None:
-            os.system('cp %s %s.temp.dmg' % (dmgFile, dmgFile))
+            os.system(f'cp {dmgFile} {dmgFile}.temp.dmg')
             os.remove(dmgFile)
             if options.compression == "bz2":
-                os.system('hdiutil convert %s.temp.dmg -format UDBZ -o %s' %
-                          (dmgFile, dmgFile))
+                os.system(f'hdiutil convert {dmgFile}.temp.dmg -format UDBZ -o {dmgFile}')
             elif options.compression == "gz":
-                os.system('hdiutil convert %s.temp.dmg -format ' % dmgFile +
-                          'UDZO -imagekey zlib-devel=9 -o %s' % dmgFile)
-            os.remove('%s.temp.dmg' % dmgFile)
-    print "Successfully added license to '%s'" % dmgFile
+                os.system(
+                    (
+                        f'hdiutil convert {dmgFile}.temp.dmg -format '
+                        + f'UDZO -imagekey zlib-devel=9 -o {dmgFile}'
+                    )
+                )
+            os.remove(f'{dmgFile}.temp.dmg')
+    dmgFile, license = args
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()
